@@ -38,8 +38,9 @@ class ShoppingList extends React.Component {
     console.log('ShoppingList.createElement()', attrs);
 
     const element = {
+      id: uuid.v4(),
       title: attrs.title,
-      id: uuid.v4()
+      state: 'toBuy',
     }
 
     this.setState({
@@ -60,18 +61,16 @@ class ShoppingList extends React.Component {
 
   render() {
     return (
-      <div className='ui three column centered grid'>
-        <div className='column'>
-          <Elements
-            elements={this.state.elements}
-            updateElement={this.updateElement}
-            deleteElement={this.deleteElement}
-          />
-          <NewElement
-            isOpen={true}
-            createElement={this.createElement}
-          />
-        </div>
+      <div className='main ui container'>
+        <Elements
+          elements={this.state.elements}
+          updateElement={this.updateElement}
+          deleteElement={this.deleteElement}
+        />
+        <NewElement
+          isOpen={true}
+          createElement={this.createElement}
+        />
       </div>
     );
   }
@@ -92,7 +91,7 @@ class Elements extends React.Component {
       ));
 
     return (
-      <div id='elements'>
+      <div className='ui six doubling cards'>
         {elements}
       </div>
     );
@@ -277,7 +276,7 @@ class Element extends React.Component {
     console.log('icon', icon);
 
     return (
-      <div className={'ui centered card ' + color}>
+      <div className={'card ' + color}>
         <div
           className='content'
           onClick={this.toggleStateOnElement}
