@@ -13,15 +13,56 @@ class ShoppingList extends React.Component {
     ],
   };
 
+  updateElement = (attrs) => {
+    console.log('ShoppingList.updateElement()', attrs);
+
+    this.setState({
+      elements: this.state.elements.map((element) => {
+        if(element.id === attrs.id) {
+          return Object.assign({}, element, attrs);
+        } else {
+          return element;
+        }
+      })
+    });
+  };
+
+  createElement = (attrs) => {
+    console.log('ShoppingList.createElement()', attrs);
+
+    const element = {
+      title: attrs.title,
+      id: uuid.v4()
+    }
+
+    this.setState({
+      elements: this.state.elements.concat(element)
+    });
+  };
+
+  deleteElement = (elementId) => {
+    console.log('ShoppingList.deleteElement()', elementId);
+
+    this.setState({
+      elements: this.state.elements.filter((element) => {
+        return element.id !== elementId
+      })
+    })
+  }
+
+
   render() {
     return (
       <div className='ui three column centered grid'>
         <div className='column'>
           <Elements
             elements={this.state.elements}
+            updateElement={this.updateElement}
+            deleteElement={this.deleteElement}
           />
           <NewElement
             isOpen={true}
+            createElement={this.createElement}
           />
         </div>
       </div>
@@ -37,6 +78,8 @@ class Elements extends React.Component {
           key={element.id}
           id={element.id}
           title={element.title}
+          updateElement={this.props.updateElement}
+          deleteElement={this.props.deleteElement}
         />
       ));
 
@@ -57,18 +100,29 @@ class EditableElement extends React.Component {
     this.setState({ editFormOpen: true });
   };
 
+  updateElement = (attrs) => {
+    console.log('EditableElement.updateElement()');
+    this.props.updateElement(attrs);
+    this.setState({ editFormOpen: false });
+  };
+
   render() {
     if (this.state.editFormOpen) {
       return (
         <ElementForm
+          id={this.props.id}
           title={this.props.title}
+          buttonText='Update'
+          handleSubmit={this.updateElement}
         />
       );
     } else {
       return (
         <Element
+          id={this.props.id}
           title={this.props.title}
           onEditButtonClick={this.onEditButtonClick}
+          deleteElement={this.props.deleteElement}
         />
       );
     }
@@ -84,23 +138,18 @@ class ElementForm extends React.Component {
     this.setState({ title: e.target.value });
   };
 
+  handleSubmit = () => {
+    console.log('ElamentForm.handleSubmit()');
+
+    this.props.handleSubmit(
+      {
+        id: this.props.id,
+        title: this.state.title
+      }
+    )
+  }
+
   render() {
-    let button;
-
-    if(this.props.title) {
-      button =  (
-        <button className='ui basic blue button'>
-          Update
-        </button>
-      );
-    } else {
-      button = (
-        <button className='ui basic blue button'>
-          Create
-        </button>
-      )
-    }
-
     return (
       <div className='ui centered card'>
         <div className='content'>
@@ -115,7 +164,12 @@ class ElementForm extends React.Component {
             </div>
             <div className='ui two bottom attached buttons'>
 
-              {button}
+              <button
+                className='ui basic blue button'
+                onClick={this.handleSubmit}
+              >
+                {this.props.buttonText}
+              </button>
 
               <button className='ui basic red button'>
                 Cancel
@@ -137,10 +191,18 @@ class NewElement extends React.Component {
     this.setState({ isOpen: true });
   };
 
+  createElement = (attrs) => {
+    this.props.createElement(attrs);
+    this.setState({ isOpen: false });
+  };
+
   render() {
     if (this.state.isOpen) {
       return (
-        <ElementForm />
+        <ElementForm
+          buttonText='Create'
+          handleSubmit={this.createElement}
+        />
       );
     } else {
       return (
@@ -158,6 +220,11 @@ class NewElement extends React.Component {
 }
 
 class Element extends React.Component {
+  deleteElement = () => {
+    console.log('Element.deleteElement()', this.props.id);
+    this.props.deleteElement(this.props.id);
+  };
+
   render() {
     return (
       <div className='ui centered card'>
@@ -174,7 +241,10 @@ class Element extends React.Component {
           >
             <i className='edit icon' />
           </span>
-          <span className='right floated trash icon'>
+          <span
+            className='right floated trash icon'
+            onClick={this.deleteElement}
+          >
             <i className='trash icon' />
           </span>
         </div>
