@@ -257,28 +257,32 @@ class Element extends React.Component {
   render() {
     console.log('this.props.state', this.props.state);
     let icon;
+    let color;
 
     switch(this.props.state) {
       case 'onHold':
         icon = 'edit';
+        color = 'brown';
         break;
       case 'toBuy':
         icon = 'shopping basket'
+        color = 'red';
         break;
       case 'bought':
         icon = 'checkmark';
+        color = 'green';
         break
     }
 
     console.log('icon', icon);
 
     return (
-      <div className='ui centered card'>
+      <div className={'ui centered card ' + color}>
         <div
           className='content'
           onClick={this.toggleStateOnElement}
         >
-          <i className={'right floated ' + icon + ' icon'} />
+          <i className={'right floated icon ' + icon + ' ' + color} />
 
           <div className='header'>
             {this.props.title}
