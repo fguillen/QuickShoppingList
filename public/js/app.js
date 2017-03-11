@@ -3,12 +3,19 @@ class ShoppingList extends React.Component {
   state = {
     elements: [
       {
-        title: 'peras',
         id: uuid.v4(),
+        title: 'peras',
+        state: 'onHold'
       },
       {
-        title: 'manzanas',
         id: uuid.v4(),
+        title: 'manzanas',
+        state: 'toBuy'
+      },
+      {
+        id: uuid.v4(),
+        title: 'manzanas',
+        state: 'bought'
       },
     ],
   };
@@ -78,6 +85,7 @@ class Elements extends React.Component {
           key={element.id}
           id={element.id}
           title={element.title}
+          state={element.state}
           updateElement={this.props.updateElement}
           deleteElement={this.props.deleteElement}
         />
@@ -121,8 +129,10 @@ class EditableElement extends React.Component {
         <Element
           id={this.props.id}
           title={this.props.title}
+          state={this.props.state}
           onEditButtonClick={this.onEditButtonClick}
           deleteElement={this.props.deleteElement}
+          updateElement={this.props.updateElement}
         />
       );
     }
@@ -225,10 +235,51 @@ class Element extends React.Component {
     this.props.deleteElement(this.props.id);
   };
 
+  toggleStateOnElement = () => {
+    console.log('Element.toggleStateOnElement()', this.props.id);
+    let state;
+
+    switch(this.props.state) {
+      case 'onHold':
+        state = 'toBuy';
+        break;
+      case 'toBuy':
+        state = 'bought'
+        break;
+      case 'bought':
+        state = 'onHold';
+        break
+    }
+
+    this.props.updateElement({ id: this.props.id, state: state });
+  };
+
   render() {
+    console.log('this.props.state', this.props.state);
+    let icon;
+
+    switch(this.props.state) {
+      case 'onHold':
+        icon = 'edit';
+        break;
+      case 'toBuy':
+        icon = 'shopping basket'
+        break;
+      case 'bought':
+        icon = 'checkmark';
+        break
+    }
+
+    console.log('icon', icon);
+
     return (
       <div className='ui centered card'>
-        <div className='content'>
+        <div
+          className='content'
+          onClick={this.toggleStateOnElement}
+        >
+          <i className={'right floated ' + icon + ' icon'} />
+
           <div className='header'>
             {this.props.title}
           </div>
