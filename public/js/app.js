@@ -49,8 +49,16 @@ class Elements extends React.Component {
 }
 
 class EditableElement extends React.Component {
+  state = {
+    editFormOpen: false
+  };
+
+  onEditButtonClick = () => {
+    this.setState({ editFormOpen: true });
+  };
+
   render() {
-    if (this.props.editFormOpen) {
+    if (this.state.editFormOpen) {
       return (
         <ElementForm
           title={this.props.title}
@@ -60,6 +68,7 @@ class EditableElement extends React.Component {
       return (
         <Element
           title={this.props.title}
+          onEditButtonClick={this.onEditButtonClick}
         />
       );
     }
@@ -76,7 +85,21 @@ class ElementForm extends React.Component {
   };
 
   render() {
-    const buttonText = this.props.title ? 'Update' : 'Create';
+    let button;
+
+    if(this.props.title) {
+      button =  (
+        <button className='ui basic blue button'>
+          Update
+        </button>
+      );
+    } else {
+      button = (
+        <button className='ui basic blue button'>
+          Create
+        </button>
+      )
+    }
 
     return (
       <div className='ui centered card'>
@@ -91,9 +114,9 @@ class ElementForm extends React.Component {
               />
             </div>
             <div className='ui two bottom attached buttons'>
-              <button className='ui basic blue button'>
-                {buttonText}
-              </button>
+
+              {button}
+
               <button className='ui basic red button'>
                 Cancel
               </button>
@@ -145,7 +168,10 @@ class Element extends React.Component {
         </div>
 
         <div className='extra content'>
-          <span className='right floated edit icon'>
+          <span
+            className='right floated edit icon'
+            onClick={this.props.onEditButtonClick}
+          >
             <i className='edit icon' />
           </span>
           <span className='right floated trash icon'>
