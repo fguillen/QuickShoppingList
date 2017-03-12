@@ -113,6 +113,11 @@ class EditableElement extends React.Component {
     this.setState({ editFormOpen: false });
   };
 
+  closeForm = () => {
+    console.log('EditableElement.closeForm()');
+    this.setState({ editFormOpen: false });
+  };
+
   render() {
     if (this.state.editFormOpen) {
       return (
@@ -121,6 +126,7 @@ class EditableElement extends React.Component {
           title={this.props.title}
           buttonText='Update'
           handleSubmit={this.updateElement}
+          handleCancel={this.closeForm}
         />
       );
     } else {
@@ -156,7 +162,7 @@ class ElementForm extends React.Component {
         title: this.state.title
       }
     )
-  }
+  };
 
   render() {
     return (
@@ -180,7 +186,10 @@ class ElementForm extends React.Component {
                 {this.props.buttonText}
               </button>
 
-              <button className='ui basic red button'>
+              <button
+                className='ui basic red button'
+                onClick={this.props.handleCancel}
+              >
                 Cancel
               </button>
             </div>
@@ -205,12 +214,18 @@ class NewElement extends React.Component {
     this.setState({ isOpen: false });
   };
 
+  closeForm = () => {
+    console.log('NewElement.closeForm()');
+    this.setState({ isOpen: false });
+  }
+
   render() {
     if (this.state.isOpen) {
       return (
         <ElementForm
           buttonText='Create'
           handleSubmit={this.createElement}
+          handleCancel={this.closeForm}
         />
       );
     } else {
