@@ -24,6 +24,8 @@ class ShoppingList extends React.Component {
         }
       })
     });
+
+    client.updateElement(attrs);
   };
 
   createElement = (attrs) => {
@@ -38,6 +40,8 @@ class ShoppingList extends React.Component {
     this.setState({
       elements: this.state.elements.concat(element)
     });
+
+    client.createElement(element);
   };
 
   deleteElement = (elementId) => {
@@ -47,7 +51,9 @@ class ShoppingList extends React.Component {
       elements: this.state.elements.filter((element) => {
         return element.id !== elementId
       })
-    })
+    });
+
+    client.deleteElement({ id: elementId });
   };
 
   componentDidMount() {
