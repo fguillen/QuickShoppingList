@@ -1,23 +1,15 @@
 
 class ShoppingList extends React.Component {
   state = {
-    elements: [
-      {
-        id: uuid.v4(),
-        title: 'peras',
-        state: 'onHold'
-      },
-      {
-        id: uuid.v4(),
-        title: 'manzanas',
-        state: 'toBuy'
-      },
-      {
-        id: uuid.v4(),
-        title: 'manzanas',
-        state: 'bought'
-      },
-    ],
+    elements: [],
+  };
+
+  loadElementsFromServer = () => {
+    console.log('ShoppingList.loadElementsFromServer()');
+    client.getElements((elements) => {
+      console.log('clien.getElements()', elements);
+      this.setState({ elements: elements });
+    })
   };
 
   updateElement = (attrs) => {
@@ -56,7 +48,13 @@ class ShoppingList extends React.Component {
         return element.id !== elementId
       })
     })
-  }
+  };
+
+  componentDidMount() {
+    this.loadElementsFromServer();
+    setInterval(this.loadElementsFromServer, 5000);
+  };
+
 
 
   render() {
@@ -294,7 +292,7 @@ class Element extends React.Component {
       <div className={'card ' + color}>
         <div
           className='content'
-          onTouchStart={this.toggleStateOnElement}
+          onClick={this.toggleStateOnElement}
         >
           <i className={'right floated icon ' + icon + ' ' + color} />
 
