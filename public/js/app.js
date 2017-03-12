@@ -6,10 +6,7 @@ class ShoppingList extends React.Component {
 
   loadElementsFromServer = () => {
     console.log('ShoppingList.loadElementsFromServer()');
-    client.getElements((elements) => {
-      console.log('clien.getElements()', elements);
-      this.setState({ elements: elements });
-    })
+    this.setState({ elements: clientLocalStorage.getElements() });
   };
 
   updateElement = (attrs) => {
@@ -25,7 +22,7 @@ class ShoppingList extends React.Component {
       })
     });
 
-    client.updateElement(attrs);
+    clientLocalStorage.updateElement(attrs);
   };
 
   createElement = (attrs) => {
@@ -41,7 +38,7 @@ class ShoppingList extends React.Component {
       elements: this.state.elements.concat(element)
     });
 
-    client.createElement(element);
+    clientLocalStorage.createElement(element);
   };
 
   deleteElement = (elementId) => {
@@ -53,7 +50,7 @@ class ShoppingList extends React.Component {
       })
     });
 
-    client.deleteElement({ id: elementId });
+    clientLocalStorage.deleteElement({ id: elementId });
   };
 
   componentDidMount() {
