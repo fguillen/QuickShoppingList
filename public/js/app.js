@@ -58,8 +58,6 @@ class ShoppingList extends React.Component {
     setInterval(this.loadElementsFromServer, 5000);
   };
 
-
-
   render() {
     return (
       <div className='main ui container'>
@@ -210,22 +208,31 @@ class NewElement extends React.Component {
     this.setState({ isOpen: true });
   };
 
-  createElement = (attrs) => {
-    this.props.createElement(attrs);
+  createElements = (attrs) => {
+    console.log('NewElement.createElements()', attrs);
+
+    const titles = attrs.title.split(",").map((title) => { return title.trim() });
+
+    console.log('NewElement.createElements().titles', titles);
+
+    titles.forEach((title) => {
+      this.props.createElement({ title: title });
+    });
+
     this.setState({ isOpen: false });
   };
 
   closeForm = () => {
     console.log('NewElement.closeForm()');
     this.setState({ isOpen: false });
-  }
+  };
 
   render() {
     if (this.state.isOpen) {
       return (
         <ElementForm
           buttonText='Create'
-          handleSubmit={this.createElement}
+          handleSubmit={this.createElements}
           handleCancel={this.closeForm}
         />
       );
