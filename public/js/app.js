@@ -302,7 +302,7 @@ class Element extends React.Component {
       <div className={'card ' + color}>
         <div
           className='content'
-          onTouchStart={this.toggleStateOnElement}
+          onClick={this.toggleStateOnElement}
         >
           <i className={'right floated icon ' + icon + ' ' + color} />
 
