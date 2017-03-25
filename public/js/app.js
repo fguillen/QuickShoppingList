@@ -1,7 +1,8 @@
 
 class ShoppingList extends React.Component {
   state = {
-    elements: [],
+    selectedFilter: 'all',
+    elements: []
   };
 
   loadElementsFromServer = () => {
@@ -23,6 +24,15 @@ class ShoppingList extends React.Component {
     });
 
     clientLocalStorage.updateElement(attrs);
+  };
+
+  updateSelectedFilter = (e) => {
+    let selectedFilter = e.target.attributes.getNamedItem("data-value").value;
+    console.log('ShoppingList.updateSelectedFilter', selectedFilter );
+
+    this.setState({
+      selectedFilter: selectedFilter
+    });
   };
 
   createElement = (attrs) => {
@@ -53,16 +63,29 @@ class ShoppingList extends React.Component {
     clientLocalStorage.deleteElement({ id: elementId });
   };
 
+  filteredElements = () => {
+    let result =
+      this.state.elements.filter((element) => {
+        return (element.state === this.state.selectedFilter) || (this.state.selectedFilter === 'all')
+      });
+
+    return result;
+  };
+
   componentDidMount() {
     this.loadElementsFromServer();
-    setInterval(this.loadElementsFromServer, 5000);
+    // setInterval(this.loadElementsFromServer, 5000);
   };
 
   render() {
     return (
       <div className='main ui container'>
+        <ElementsFilter
+          selectedFilter={this.selectedFilter}
+          updateSelectedFilter={this.updateSelectedFilter}
+        />
         <Elements
-          elements={this.state.elements}
+          elements={this.filteredElements()}
           updateElement={this.updateElement}
           deleteElement={this.deleteElement}
         />
@@ -277,7 +300,6 @@ class Element extends React.Component {
   };
 
   render() {
-    console.log('this.props.state', this.props.state);
     let icon;
     let color;
 
@@ -295,8 +317,6 @@ class Element extends React.Component {
         color = 'green';
         break
     }
-
-    console.log('icon', icon);
 
     return (
       <div className={'card ' + color}>
@@ -329,6 +349,26 @@ class Element extends React.Component {
     );
   }
 }
+
+class ElementsFilter extends React.Component {
+  menuClass = (menuValue) => {
+    let result = 'item';
+    if(this.props.selectedFilter === menuValue) result += ' active';
+
+    return result;
+  };
+
+  render() {
+    return (
+      <div className='ui four item menu'>
+        <a className={this.menuClass('all')} data-value='all' onClick={this.props.updateSelectedFilter}>All</a>
+        <a className={this.menuClass('toBuy')} data-value='toBuy' onClick={this.props.updateSelectedFilter}>To Buy</a>
+        <a className={this.menuClass('bought')} data-value='bought' onClick={this.props.updateSelectedFilter}>Bought</a>
+        <a className={this.menuClass('onHold')} data-value='onHold' onClick={this.props.updateSelectedFilter}>On Hold</a>
+      </div>
+    );
+  };
+};
 
 ReactDOM.render(
   <ShoppingList />,
