@@ -172,7 +172,7 @@ class Elements extends React.Component {
       ));
 
     return (
-      <div className='ui six doubling cards'>
+      <div className='ui three stackable cards'>
         {elements}
       </div>
     );
@@ -259,7 +259,6 @@ class ElementForm extends React.Component {
               />
             </div>
             <div className='ui two bottom attached buttons'>
-
               <button
                 className='ui basic blue button'
                 onClick={this.handleSubmit}
@@ -445,7 +444,7 @@ class ElementsFilter extends React.Component {
     return (
       <div className="ui stackable menu" id="navbar">
         <div className="item">
-          <img src="/assets/quick_shopping_list_logo.png" />
+          <img src="./assets/quick_shopping_list_logo.png" />
         </div>
         <a className={'item ' + this.addClassIfActive('all', 'teal active')} data-value="all" onClick={this.props.updateSelectedFilter}>
           All

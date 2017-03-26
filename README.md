@@ -35,3 +35,4 @@ The server is now running at [localhost:3000](localhost:3000)
 - Change List.name to List.title to be coherent with Elements
 - Delete List
 - Delete List confirmation
+- After create multiple elements with the comma, only the last one is shown
