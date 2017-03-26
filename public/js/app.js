@@ -81,7 +81,7 @@ class ShoppingList extends React.Component {
     return (
       <div className='main ui container'>
         <ElementsFilter
-          selectedFilter={this.selectedFilter}
+          selectedFilter={this.state.selectedFilter}
           updateSelectedFilter={this.updateSelectedFilter}
         />
         <Elements
@@ -355,16 +355,21 @@ class ElementsFilter extends React.Component {
     let result = 'item';
     if(this.props.selectedFilter === menuValue) result += ' active';
 
+    console.log('ElementsFilter.menuClass', menuValue, this.props.selectedFilter, result);
+
     return result;
   };
 
   render() {
     return (
-      <div className='ui four item menu'>
-        <a className={this.menuClass('all')} data-value='all' onClick={this.props.updateSelectedFilter}>All</a>
-        <a className={this.menuClass('toBuy')} data-value='toBuy' onClick={this.props.updateSelectedFilter}>To Buy</a>
-        <a className={this.menuClass('bought')} data-value='bought' onClick={this.props.updateSelectedFilter}>Bought</a>
-        <a className={this.menuClass('onHold')} data-value='onHold' onClick={this.props.updateSelectedFilter}>On Hold</a>
+      <div className="ui stackable menu" id="navbar">
+        <div className="item">
+          <img src="/assets/quick_shopping_list_logo.png" />
+        </div>
+        <a className={this.menuClass('all')} data-value="all" onClick={this.props.updateSelectedFilter}>All</a>
+        <a className={this.menuClass('toBuy')} data-value="toBuy" onClick={this.props.updateSelectedFilter}>To Buy</a>
+        <a className={this.menuClass('bought')} data-value="bought" onClick={this.props.updateSelectedFilter}>Bought</a>
+        <a className={this.menuClass('onHold')} data-value="onHold" onClick={this.props.updateSelectedFilter}>On Hold</a>
       </div>
     );
   };
