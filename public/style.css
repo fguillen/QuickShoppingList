@@ -1,3 +1,7 @@
+body {
+  min-width: 0px
+}
+
 #content {
   margin-top: 10px;
 }
