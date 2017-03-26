@@ -64,13 +64,29 @@ class ShoppingList extends React.Component {
   };
 
   filteredElements = () => {
+    return this.filterElements(this.state.selectedFilter);
+  };
+
+  filterElements = (state) => {
     let result =
       this.state.elements.filter((element) => {
-        return (element.state === this.state.selectedFilter) || (this.state.selectedFilter === 'all')
+        return (element.state === state) || (state === 'all')
       });
 
     return result;
   };
+
+
+  elementsCounters = () => {
+    let result = {
+      'all': this.filterElements('all').length,
+      'toBuy': this.filterElements('toBuy').length,
+      'bought': this.filterElements('bought').length,
+      'onHold': this.filterElements('onHold').length
+    }
+
+    return result;
+  }
 
   componentDidMount() {
     this.loadElementsFromServer();
@@ -82,6 +98,7 @@ class ShoppingList extends React.Component {
       <div className='main ui container'>
         <ElementsFilter
           selectedFilter={this.state.selectedFilter}
+          elementsCounters={this.elementsCounters()}
           updateSelectedFilter={this.updateSelectedFilter}
         />
         <Elements
@@ -351,13 +368,12 @@ class Element extends React.Component {
 }
 
 class ElementsFilter extends React.Component {
-  menuClass = (menuValue) => {
-    let result = 'item';
-    if(this.props.selectedFilter === menuValue) result += ' active';
-
-    console.log('ElementsFilter.menuClass', menuValue, this.props.selectedFilter, result);
-
-    return result;
+  addClassIfActive = (menuValue, className) => {
+    if(this.props.selectedFilter === menuValue) {
+      return className;
+    } else {
+      return '';
+    }
   };
 
   render() {
@@ -366,10 +382,22 @@ class ElementsFilter extends React.Component {
         <div className="item">
           <img src="/assets/quick_shopping_list_logo.png" />
         </div>
-        <a className={this.menuClass('all')} data-value="all" onClick={this.props.updateSelectedFilter}>All</a>
-        <a className={this.menuClass('toBuy')} data-value="toBuy" onClick={this.props.updateSelectedFilter}>To Buy</a>
-        <a className={this.menuClass('bought')} data-value="bought" onClick={this.props.updateSelectedFilter}>Bought</a>
-        <a className={this.menuClass('onHold')} data-value="onHold" onClick={this.props.updateSelectedFilter}>On Hold</a>
+        <a className={'item ' + this.addClassIfActive('all', 'teal active')} data-value="all" onClick={this.props.updateSelectedFilter}>
+          All
+          <div className={'ui label ' + this.addClassIfActive('all', 'teal left pointing')}>{this.props.elementsCounters.all}</div>
+        </a>
+        <a className={'item ' + this.addClassIfActive('toBuy', 'active')} data-value="toBuy" onClick={this.props.updateSelectedFilter}>
+          To Buy
+          <div className={'ui label ' + this.addClassIfActive('toBuy', 'teal left pointing')}>{this.props.elementsCounters.toBuy}</div>
+        </a>
+        <a className={'item ' + this.addClassIfActive('bought', 'active')} data-value="bought" onClick={this.props.updateSelectedFilter}>
+          Bought
+          <div className={'ui label ' + this.addClassIfActive('bought', 'teal left pointing')}>{this.props.elementsCounters.bought}</div>
+        </a>
+        <a className={'item ' + this.addClassIfActive('onHold', 'active')} data-value="onHold" onClick={this.props.updateSelectedFilter}>
+          On Hold
+          <div className={'ui label ' + this.addClassIfActive('onHold', 'teal left pointing')}>{this.props.elementsCounters.onHold}</div>
+        </a>
       </div>
     );
   };
