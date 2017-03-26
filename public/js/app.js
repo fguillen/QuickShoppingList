@@ -2,12 +2,27 @@
 class ShoppingList extends React.Component {
   state = {
     selectedFilter: 'all',
+    selectedListId: null,
+    listsSummary: [],
     elements: []
   };
 
-  loadElementsFromServer = () => {
-    console.log('ShoppingList.loadElementsFromServer()');
-    this.setState({ elements: clientLocalStorage.getElements() });
+  loadListsFromServer = () => {
+    console.log('ShoppingList.loadListsFromServer()');
+    let lists = clientLocalStorage.getLists();
+    let selectedListId = lists[0] ? lists[0].id : null;
+    let elements = lists[0] ? lists[0].elements : [];
+    let listsSummary = lists.map( (list) => { return { "id": list.id,"name": list.name }; });
+
+    console.log("ShoppingList.loadListsFromServer.listsSummary", listsSummary);
+
+    this.setState(
+      {
+        selectedListId: selectedListId,
+        elements: elements,
+        listsSummary: listsSummary
+      }
+    );
   };
 
   updateElement = (attrs) => {
@@ -23,7 +38,7 @@ class ShoppingList extends React.Component {
       })
     });
 
-    clientLocalStorage.updateElement(attrs);
+    clientLocalStorage.updateElement(attrs, this.state.selectedListId);
   };
 
   updateSelectedFilter = (e) => {
@@ -32,6 +47,17 @@ class ShoppingList extends React.Component {
 
     this.setState({
       selectedFilter: selectedFilter
+    });
+  };
+
+  updateSelectedList = (e) => {
+    let selectedListId = e.target.attributes.getNamedItem("data-list-id").value;
+    console.log('ShoppingList.updateSelectedList', selectedListId );
+    let list = clientLocalStorage.getLists().find( (list) => { return list.id === selectedListId });
+
+    this.setState({
+      selectedListId: selectedListId,
+      elements: list.elements,
     });
   };
 
@@ -48,7 +74,7 @@ class ShoppingList extends React.Component {
       elements: this.state.elements.concat(element)
     });
 
-    clientLocalStorage.createElement(element);
+    clientLocalStorage.createElement(element, this.state.selectedListId);
   };
 
   deleteElement = (elementId) => {
@@ -60,7 +86,7 @@ class ShoppingList extends React.Component {
       })
     });
 
-    clientLocalStorage.deleteElement({ id: elementId });
+    clientLocalStorage.deleteElement({ id: elementId }, this.state.selectedListId);
   };
 
   filteredElements = () => {
@@ -76,7 +102,6 @@ class ShoppingList extends React.Component {
     return result;
   };
 
-
   elementsCounters = () => {
     let result = {
       'all': this.filterElements('all').length,
@@ -89,8 +114,8 @@ class ShoppingList extends React.Component {
   }
 
   componentDidMount() {
-    this.loadElementsFromServer();
-    // setInterval(this.loadElementsFromServer, 5000);
+    this.loadListsFromServer();
+    // setInterval(this.loadListsFromServer, 5000);
   };
 
   render() {
@@ -100,6 +125,8 @@ class ShoppingList extends React.Component {
           selectedFilter={this.state.selectedFilter}
           elementsCounters={this.elementsCounters()}
           updateSelectedFilter={this.updateSelectedFilter}
+          updateSelectedList={this.updateSelectedList}
+          listsSummary={this.state.listsSummary}
         />
         <Elements
           elements={this.filteredElements()}
@@ -376,6 +403,20 @@ class ElementsFilter extends React.Component {
     }
   };
 
+  componentDidMount() {
+    $('.ui.dropdown').dropdown();
+  };
+
+  listLinks = () => {
+    console.log("ElementsFilter.listLinks.listsSummary", this.props.listsSummary);
+    return (
+      this.props.listsSummary.map( (list) => {
+        console.log("list", list);
+        return (<div className="item" key={list.id} data-list-id={list.id} onClick={this.props.updateSelectedList}>{list.name}</div>)
+      })
+    )
+  }
+
   render() {
     return (
       <div className="ui stackable menu" id="navbar">
@@ -398,6 +439,16 @@ class ElementsFilter extends React.Component {
           On Hold
           <div className={'ui label ' + this.addClassIfActive('onHold', 'teal left pointing')}>{this.props.elementsCounters.onHold}</div>
         </a>
+
+        <div className="ui right dropdown item">
+          Lists
+          <i className="dropdown icon"></i>
+          <div className="menu">
+            {this.listLinks()}
+            <div className="divider"></div>
+            <div className="item">Create new List</div>
+          </div>
+        </div>
       </div>
     );
   };

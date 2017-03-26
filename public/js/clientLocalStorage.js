@@ -1,18 +1,32 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 window.clientLocalStorage = (function () {
-  function getElements() {
-    return JSON.parse(localStorage.getItem('elements')) || [];
+  function getLists() {
+    let raw_content = localStorage.getItem('quick_shopping_list');
+    // console.log('clientLocalStorage.getLists()', raw_content);
+    let db = JSON.parse(raw_content);
+    return db ? db.lists : [];
   }
 
-  function createElement(element) {
-    const elements = getElements().concat(element);
-    localStorage.setItem('elements', JSON.stringify(elements));
+  function getList(lists, listId) {
+    return lists.find(function(list) { return list.id === listId });
   }
 
-  function updateElement(attrs) {
-    const elements =
-      getElements().map((element) => {
+  function createElement(element, listId) {
+    let lists = this.getLists();
+    let list = this.getList(lists, listId);
+
+    list.elements = list.elements.concat(element);
+
+    localStorage.setItem('quick_shopping_list', JSON.stringify({ "lists": lists }));
+  }
+
+  function updateElement(attrs, listId) {
+    let lists = this.getLists();
+    let list = this.getList(lists, listId);
+
+    list.elements =
+      list.elements.map((element) => {
         if(element.id === attrs.id) {
           return Object.assign({}, element, attrs);
         } else {
@@ -20,20 +34,24 @@ window.clientLocalStorage = (function () {
         }
       });
 
-    localStorage.setItem('elements', JSON.stringify(elements));
+    localStorage.setItem('quick_shopping_list', JSON.stringify({ "lists": lists }));
   };
 
-  function deleteElement(attrs) {
-    const elements =
-      getElements().filter((element) => {
+  function deleteElement(attrs, listId) {
+    let lists = this.getLists();
+    let list = this.getList(lists, listId);
+
+    list.elements =
+      list.elements.filter((element) => {
         return element.id !== attrs.id
       });
 
-    localStorage.setItem('elements', JSON.stringify(elements));
+    localStorage.setItem('quick_shopping_list', JSON.stringify({ "lists": lists }));
   }
 
   return {
-    getElements,
+    getLists,
+    getList,
     createElement,
     updateElement,
     deleteElement,
