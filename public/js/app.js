@@ -12,7 +12,7 @@ class ShoppingList extends React.Component {
     let lists = clientLocalStorage.getLists();
     let selectedListId = lists[0] ? lists[0].id : null;
     let elements = lists[0] ? lists[0].elements : [];
-    let listsSummary = lists.map( (list) => { return { "id": list.id,"name": list.name }; });
+    let listsSummary = lists.map( (list) => { return { "id": list.id, "name": list.name }; });
 
     console.log("ShoppingList.loadListsFromServer.listsSummary", listsSummary);
 
@@ -50,8 +50,7 @@ class ShoppingList extends React.Component {
     });
   };
 
-  updateSelectedList = (e) => {
-    let selectedListId = e.target.attributes.getNamedItem("data-list-id").value;
+  updateSelectedList = (selectedListId) => {
     console.log('ShoppingList.updateSelectedList', selectedListId );
     let list = clientLocalStorage.getLists().find( (list) => { return list.id === selectedListId });
 
@@ -75,6 +74,19 @@ class ShoppingList extends React.Component {
     });
 
     clientLocalStorage.createElement(element, this.state.selectedListId);
+  };
+
+  createList = (attrs) => {
+    console.log('ShoppingList.createList()', attrs);
+
+    const list = {
+      id: uuid.v4(),
+      name: attrs.name,
+      elements: []
+    }
+
+    clientLocalStorage.createList(list);
+    this.updateSelectedList(list.id)
   };
 
   deleteElement = (elementId) => {
@@ -136,6 +148,9 @@ class ShoppingList extends React.Component {
         <NewElement
           isOpen={true}
           createElement={this.createElement}
+        />
+        <NewListModal
+          createList={this.createList}
         />
       </div>
     );
@@ -403,6 +418,11 @@ class ElementsFilter extends React.Component {
     }
   };
 
+  updateSelectedList = (e) => {
+    let selectedListId = e.target.attributes.getNamedItem("data-list-id").value;
+    this.props.updateSelectedList(selectedListId);
+  };
+
   componentDidMount() {
     $('.ui.dropdown').dropdown();
   };
@@ -412,10 +432,14 @@ class ElementsFilter extends React.Component {
     return (
       this.props.listsSummary.map( (list) => {
         console.log("list", list);
-        return (<div className="item" key={list.id} data-list-id={list.id} onClick={this.props.updateSelectedList}>{list.name}</div>)
+        return (<div className="item" key={list.id} data-list-id={list.id} onClick={this.updateSelectedList}>{list.name}</div>)
       })
     )
-  }
+  };
+
+  openNewListModal = () => {
+    $('.ui.modal.editform').modal('show');
+  };
 
   render() {
     return (
@@ -446,9 +470,66 @@ class ElementsFilter extends React.Component {
           <div className="menu">
             {this.listLinks()}
             <div className="divider"></div>
-            <div className="item">Create new List</div>
+            <div className="item" onClick={this.openNewListModal}>Create new List</div>
           </div>
         </div>
+      </div>
+    );
+  };
+};
+
+class NewListModal extends React.Component {
+  handleSubmit = () => {
+    console.log('NewListModalNewListModal.handleSubmit()');
+
+    this.props.createList({
+      name: $('#new-list-name-element').val()
+    });
+
+    $('.ui.modal.editform').modal('hide');
+  };
+
+  handleCancel = () => {
+    console.log("NewListModal.handleCancel()");
+    $('.ui.modal.editform').modal('hide');
+  };
+
+  componentDidMount() {
+    $('.ui.modal').modal({ detachable: false });
+  };
+
+  render(){
+    return (
+      <div className="ui modal editform">
+          <i className="close icon"></i>
+          <div className="header">Create New List</div>
+          <div className="content">
+            <div className='ui form'>
+              <div className='field'>
+                <label>Title</label>
+                <input
+                  type='text'
+                  id='new-list-name-element'
+                />
+              </div>
+              <div className='ui two bottom attached buttons'>
+
+                <button
+                  className='ui basic blue button'
+                  onClick={this.handleSubmit}
+                >
+                  Save
+                </button>
+
+                <button
+                  className='ui basic red button'
+                  onClick={this.handleCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
       </div>
     );
   };

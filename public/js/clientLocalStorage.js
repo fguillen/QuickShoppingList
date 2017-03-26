@@ -12,6 +12,15 @@ window.clientLocalStorage = (function () {
     return lists.find(function(list) { return list.id === listId });
   }
 
+  function createList(list) {
+    console.log("clientLocalStorage.createList()", list);
+
+    let lists = this.getLists();
+    lists = lists.concat(list);
+
+    localStorage.setItem('quick_shopping_list', JSON.stringify({ "lists": lists }));
+  }
+
   function createElement(element, listId) {
     let lists = this.getLists();
     let list = this.getList(lists, listId);
@@ -52,6 +61,7 @@ window.clientLocalStorage = (function () {
   return {
     getLists,
     getList,
+    createList,
     createElement,
     updateElement,
     deleteElement,
