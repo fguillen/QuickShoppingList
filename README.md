@@ -20,7 +20,6 @@ The server is now running at [localhost:3000](localhost:3000)
 
 ## TODOs
 
-- Create new List
 - Edit List title
 - Make the set up more npm compatible, with package.json and all this
 - Import lists from a raw json
@@ -30,3 +29,9 @@ The server is now running at [localhost:3000](localhost:3000)
 - Delete element confirmation
 - Initial step when not any List present
 - Hide admin links in Elements
+- When Create List the listSummary is not updated
+- Fix the messy use of $('#new-list-name-element') to open/close the newListModal
+- Fix the messy use of $('#new-list-name-element').val() to get the new List name
+- Change List.name to List.title to be coherent with Elements
+- Delete List
+- Delete List confirmation
